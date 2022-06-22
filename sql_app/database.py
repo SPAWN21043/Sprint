@@ -14,7 +14,7 @@ host = os.getenv("FSTR_DB_HOST")
 port = os.getenv("FSTR_DB_PORT")
 name = os.getenv("FSTR_DB_NAME")
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://{login}:{password}@{host}:{port}/{name}"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{login}:{password}@{host}/{name}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL

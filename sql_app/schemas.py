@@ -104,7 +104,7 @@ class PassCreate(BaseModel):
     autumn: str
     spring: str
     user: Optional[UserCreate]
-    coord: Optional[CoordCreate]
+    coords: Optional[CoordCreate]
 
     class Config:
         schema_extra = {

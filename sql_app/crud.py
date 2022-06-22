@@ -16,7 +16,6 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    print(user)
 
     db_user = get_user_by_email(db, email=user.email)
     if db_user is None:
@@ -24,14 +23,14 @@ def create_user(db: Session, user: schemas.UserCreate):
         db.add(db_users)
         db.commit()
         db.refresh(db_users)
-        return db_users
+        return db_users.id
     else:
         db_users = db_user
-        return db_users
+        return db_users.id
 
 
 def create_coord(db: Session, coords: schemas.CoordCreate):
-    print(coords)
+
     db_coord = models.Coord(**coords.dict())
 
     db.add(db_coord)
@@ -50,7 +49,7 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
         connect=item.connect,
         add_time=item.add_time,
         user=item.user,
-        coord=item.coord,
+        coords=item.coords,
         winter=item.winter,
         summer=item.summer,
         autumn=item.autumn,
@@ -64,4 +63,4 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
     db.commit()
     db.refresh(db_pass)
 
-    return db_pass
+    return db_pass.id

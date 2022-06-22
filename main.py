@@ -18,20 +18,24 @@ def get_db():
 
 @app.post('/submitData/', response_model=schemas.PassCreate)
 def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):
-    print(item)
+    '''
+    :param item: класс схема базовой модели пользователя
+    :param db: сессия подключения к БД
+    :return: сообщение в формате JSON о результате создания и id объекта
+    '''
 
-    try:
+    try:  # Проверка на подключение к базе
         db.execute('SELECT * FROM users')
     except Exception as error:
         raise ErrorConnectionServer(f'Ошибка соединения: {error}')
 
     news_user = crud.create_user(db=db, user=item.user)
 
-    new_coords = crud.create_coord(db=db, coords=item.coord)
+    new_coord = crud.create_coord(db=db, coords=item.coords)
 
     item.user = news_user
-    item.coord = new_coords
+    item.coords = new_coord
 
     new_pereval = crud.create_pass(db=db, item=item)
 
-    return get_json_response(200, 'Отправлено', new_pereval.id)
+    return get_json_response(200, "Отправлено", new_pereval)
