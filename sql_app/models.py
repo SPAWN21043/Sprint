@@ -30,15 +30,15 @@ class Coord(Base):
     pass_add = relationship("Pass", back_populates="coord")
 
 
-'''class Image(Base):
-    __tablename__ = "images"
+class Image(Base):
+    __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    pass_id = Column(Integer, ForeignKey('pass_added.id'))
+    image_url = Column(String)
+    title = Column(String)
+    id_pass = Column(Integer, ForeignKey("pass_added.id"))
 
-    pass_add = relationship("Pass", back_populates="image")'''
+    owner = relationship("Pass", back_populates="images")
 
 
 class Pass(Base):
@@ -54,9 +54,11 @@ class Pass(Base):
     summer = Column(String)
     autumn = Column(String)
     spring = Column(String)
+    status = Column(String)
     user = Column(Integer, ForeignKey("users.id"))
     coords = Column(Integer, ForeignKey("coords.id"))
 
     users = relationship("User", back_populates="pass_add")
     coord = relationship("Coord", back_populates="pass_add")
-    '''image = relationship("Image", back_populates="passs")'''
+    images = relationship("Image", back_populates="owner")
+

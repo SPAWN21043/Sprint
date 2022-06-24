@@ -18,6 +18,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 def create_user(db: Session, user: schemas.UserCreate):
 
     db_user = get_user_by_email(db, email=user.email)
+
     if db_user is None:
         db_users = models.User(**user.dict())
         db.add(db_users)
@@ -38,6 +39,32 @@ def create_coord(db: Session, coords: schemas.CoordCreate):
     db.refresh(db_coord)
 
     return db_coord.id
+
+
+def search_pass(db: Session, new_pereval: int, image: schemas.ImageCreate):
+    print(image)
+    print(image[1])
+    for i in image:
+        print(i)
+        db_coord = models.Image(**i.dict())
+        print(db_coord)
+        db_coord.id_pass = new_pereval
+
+        db.add(db_coord)
+
+    db.commit()
+
+
+'''def create_image(db: Session, images: schemas.ImageCreate):
+    for i in images:
+
+        db_coord = models.Image(**i.dict())
+
+        db.add(db_coord)
+        db.commit()
+        db.refresh(db_coord)
+
+        return db_coord.id'''
 
 
 def create_pass(db: Session, item: schemas.PassCreate) -> object:

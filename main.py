@@ -38,4 +38,6 @@ def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):
 
     new_pereval = crud.create_pass(db=db, item=item)
 
+    new_image = crud.search_pass(db=db, new_pereval=new_pereval, image=item.images)
+
     return get_json_response(200, "Отправлено", new_pereval)

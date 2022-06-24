@@ -64,33 +64,17 @@ class User(UserBase):
         orm_mode = True
 
 
-'''class PassBase(BaseModel):
+class ImageCreate(BaseModel):
+    image_url: str
+    title: str
+
+
+class Image(ImageCreate):
+    id: int
+    images: List[ImageCreate]
+
     class Config:
-        schema_extra = {
-            'example': {
-                "beautyTitle": "пер. ",
-                "title": "Пхия",
-                "other_titles": "Триев",
-                "connect": "",
-                "add_time": "2021-09-22 13:18:13",
-                "winter": "",
-                "summer": "1А",
-                "autumn": "1А",
-                "spring": "",
-                "user": {
-                    "email": "user@email.tld",
-                    "phone": "79031234567",
-                    "fam": "Пупкин",
-                    "name": "Василий",
-                    "otc": "Иванович",
-                },
-                "coords": {
-                    "latitude": "45.3842",
-                    "longitude": "7.1525",
-                    "height": "1200",
-                },    
-            }
-        }'''
+        orm_mode = True
 
 
 class PassCreate(BaseModel):
@@ -105,6 +89,7 @@ class PassCreate(BaseModel):
     spring: str
     user: Optional[UserCreate]
     coords: Optional[CoordCreate]
+    images: Optional[List[ImageCreate]]
 
     class Config:
         schema_extra = {
@@ -131,11 +116,9 @@ class PassCreate(BaseModel):
                     "height": "1200",
                 },
                 "images":
-                    [{"id": 1,
-                      "image_url": "",
+                    [{"image_url": "",
                       "title": "Седловина"},
-                     {"id": 2,
-                      "image_url": "",
+                     {"image_url": "",
                       "title": "Подъем"}]
             }
         }
