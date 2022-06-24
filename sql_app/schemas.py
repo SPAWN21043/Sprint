@@ -1,5 +1,5 @@
-from typing import List, Optional
-from pydantic import BaseModel
+from typing import List, Union, Optional
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
@@ -122,6 +122,7 @@ class PassCreate(BaseModel):
 
 class Pass(PassCreate):
     id: int
+    status: str
     user: int
     coord: int
 

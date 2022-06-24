@@ -1,3 +1,4 @@
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from . import models, schemas
 import datetime
@@ -5,6 +6,7 @@ import datetime
 
 # Запрос по id
 def get_user(db: Session, user_id: int):
+    print(user_id)
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
@@ -60,6 +62,25 @@ def search_pass(db: Session, new_pereval: int, image: schemas.ImageCreate):
     db.commit()
 
 
+def get_pass(db: Session, id: int) -> dict:
+
+        pereval = db.query(models.Pass).filter(models.Pass.id == id).first()
+        user = db.query(models.User).filter(models.User.id == pereval.user).first()
+        coords = db.query(models.Coord).filter(models.Coord.id == pereval.coords).first()
+        image = db.query(models.Image).filter(models.Image.id_pass == id).first()
+
+        json_user = jsonable_encoder(user)
+        json_coords = jsonable_encoder(coords)
+        json_images = jsonable_encoder(image)
+        dict_pereval = jsonable_encoder(pereval)
+
+        dict_pereval['user'] = json_user
+        dict_pereval['coords'] = json_coords
+        dict_pereval['images'] = json_images
+
+        return dict_pereval
+
+
 # Запрос на создание перевала
 def create_pass(db: Session, item: schemas.PassCreate) -> object:
 
@@ -85,3 +106,6 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
     db.refresh(db_pass)
 
     return db_pass.id
+
+
+
