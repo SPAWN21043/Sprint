@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import relationship
 
 from .database import Base
 
 
-class User(Base):
+class User(Base):  # Модель таблицы пользователя
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -16,10 +17,12 @@ class User(Base):
     name = Column(String)
     otc = Column(String)
 
+    # Организация связи таблиц
     pass_add = relationship("Pass", back_populates="users")
 
 
-class Coord(Base):
+class Coord(Base):  # Модель таблицы с координатами
+
     __tablename__ = "coords"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -27,21 +30,25 @@ class Coord(Base):
     longitude = Column(Float)
     height = Column(Integer)
 
+    # Организация связи таблиц
     pass_add = relationship("Pass", back_populates="coord")
 
 
-'''class Image(Base):
-    __tablename__ = "images"
+class Image(Base):  # Модель таблицы с информацией о картинках
+
+    __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    pass_id = Column(Integer, ForeignKey('pass_added.id'))
+    image_url = Column(String)
+    title = Column(String)
+    id_pass = Column(Integer, ForeignKey("pass_added.id"))
 
-    pass_add = relationship("Pass", back_populates="image")'''
+    # Организация связи таблиц
+    owner = relationship("Pass", back_populates="images")
 
 
-class Pass(Base):
+class Pass(Base):  # Модель таблицы перевалов
+
     __tablename__ = "pass_added"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -54,9 +61,11 @@ class Pass(Base):
     summer = Column(String)
     autumn = Column(String)
     spring = Column(String)
+    status = Column(String)
     user = Column(Integer, ForeignKey("users.id"))
     coords = Column(Integer, ForeignKey("coords.id"))
 
+    # Организация связи таблиц
     users = relationship("User", back_populates="pass_add")
     coord = relationship("Coord", back_populates="pass_add")
-    '''image = relationship("Image", back_populates="passs")'''
+    images = relationship("Image", back_populates="owner")
