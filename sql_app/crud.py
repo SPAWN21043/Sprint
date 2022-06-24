@@ -64,21 +64,21 @@ def search_pass(db: Session, new_pereval: int, image: schemas.ImageCreate):
 
 def get_pass(db: Session, id: int) -> dict:
 
-        pereval = db.query(models.Pass).filter(models.Pass.id == id).first()
-        user = db.query(models.User).filter(models.User.id == pereval.user).first()
-        coords = db.query(models.Coord).filter(models.Coord.id == pereval.coords).first()
+        c_pass = db.query(models.Pass).filter(models.Pass.id == id).first()
+        user = db.query(models.User).filter(models.User.id == c_pass.user).first()
+        coords = db.query(models.Coord).filter(models.Coord.id == c_pass.coords).first()
         image = db.query(models.Image).filter(models.Image.id_pass == id).first()
 
         json_user = jsonable_encoder(user)
         json_coords = jsonable_encoder(coords)
         json_images = jsonable_encoder(image)
-        dict_pereval = jsonable_encoder(pereval)
+        dict_pass = jsonable_encoder(c_pass)
 
-        dict_pereval['user'] = json_user
-        dict_pereval['coords'] = json_coords
-        dict_pereval['images'] = json_images
+        dict_pass['user'] = json_user
+        dict_pass['coords'] = json_coords
+        dict_pass['images'] = json_images
 
-        return dict_pereval
+        return dict_pass
 
 
 # Запрос на создание перевала
@@ -108,4 +108,34 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
     return db_pass.id
 
 
+def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> object:
+    db_pass = db.query(models.Pass).filter(models.Pass.id == pass_id).first()
 
+    db_pass.beauty_title = item.beauty_title
+    db_pass.title = item.title
+    db_pass.other_titles = item.other_titles
+    db_pass.connect = item.connect
+    db_pass.winter = item.winter
+    db_pass.summer = item.summer
+    db_pass.autumn = item.autumn
+    db_pass.spring = item.spring
+
+    if not db_pass.coords_id is None:
+        db_coords = db.query(models.Coords).filter(models.Coords.id == db_pass.coords_id).first()
+
+        db_coords.latitude = item.coords.latitude
+        db_coords.longitude = item.coords.longitude
+        db_coords.height = item.coords.height
+
+        db.add(db_coords)
+        db.commit()
+        db.refresh(db_coords)
+    else:
+        db_coords = create_coord(db, item.coords)
+        db_pass.coords_id = db_coords.id
+
+    db.add(db_pass)
+    db.commit()
+    db.refresh(db_pass)
+
+    return db_pass.id

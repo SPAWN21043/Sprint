@@ -120,6 +120,37 @@ class PassCreate(BaseModel):
         }
 
 
+class PassAddedUpdate(BaseModel):
+    beauty_title: Union[str, None] = None
+    title: Union[str, None] = None
+    other_titles: Union[str, None] = None
+    connect: Union[str, None] = None
+    winter: Union[str, None] = None
+    summer: Union[str, None] = None
+    autumn: Union[str, None] = None
+    spring: Union[str, None] = None
+    coords: Union[CoordCreate, None] = None
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'beauty_title': 'пер.',
+                'title': 'Гроза',
+                'other_titles': 'Третьев',
+                'connect': ', ',
+                'coords': {
+                    'latitude': 56.2368,
+                    'longitude': 41.683,
+                    'height': 120,
+                },
+                'winter': '1Б',
+                'summer': '1А',
+                'autumn': '1А',
+                'spring': '1А',
+            }
+        }
+
+
 class Pass(PassCreate):
     id: int
     status: str
