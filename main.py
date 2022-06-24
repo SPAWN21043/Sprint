@@ -17,27 +17,22 @@ def get_db():
 
 
 @app.post('/submitData/', response_model=schemas.PassCreate)
-def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):
-    '''
-    :param item: класс схема базовой модели пользователя
-    :param db: сессия подключения к БД
-    :return: сообщение в формате JSON о результате создания и id объекта
-    '''
+def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):  # Название изменено так как не должно быть больших букв в названии
 
     try:  # Проверка на подключение к базе
         db.execute('SELECT * FROM users')
     except Exception as error:
         raise ErrorConnectionServer(f'Ошибка соединения: {error}')
 
-    news_user = crud.create_user(db=db, user=item.user)
+    news_user = crud.create_user(db=db, user=item.user)  # Создание пользователя
 
-    new_coord = crud.create_coord(db=db, coords=item.coords)
+    new_coord = crud.create_coord(db=db, coords=item.coords)  # Создание координат
 
     item.user = news_user
     item.coords = new_coord
 
-    new_pereval = crud.create_pass(db=db, item=item)
+    new_pereval = crud.create_pass(db=db, item=item)  # Создание перевала
 
-    new_image = crud.search_pass(db=db, new_pereval=new_pereval, image=item.images)
+    crud.search_pass(db=db, new_pereval=new_pereval, image=item.images)  # Создание информации о картинках
 
     return get_json_response(200, "Отправлено", new_pereval)

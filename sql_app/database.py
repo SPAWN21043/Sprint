@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker, DeclarativeMeta
 from dotenv import load_dotenv, find_dotenv
 
 
-load_dotenv(find_dotenv())
+load_dotenv(find_dotenv())  # загрузка переменных
 login = os.getenv("FSTR_DB_LOGIN")
 password = os.getenv("FSTR_DB_PASS")
 host = os.getenv("FSTR_DB_HOST")
@@ -15,6 +15,8 @@ port = os.getenv("FSTR_DB_PORT")
 name = os.getenv("FSTR_DB_NAME")
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{login}:{password}@{host}/{name}"
+
+# так как используется postgresql параметр connect_args={"check_same_thread": False} не нужен.
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL

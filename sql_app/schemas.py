@@ -3,12 +3,8 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 
-class CoordBase(BaseModel):
-    latitude: float
-    longitude: float
-
-
-class CoordCreate(CoordBase):
+# Схемы моделей pydantic
+class CoordCreate(BaseModel):
     latitude: float
     longitude: float
     height: int

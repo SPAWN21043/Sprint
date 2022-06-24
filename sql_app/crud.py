@@ -3,18 +3,22 @@ from . import models, schemas
 import datetime
 
 
+# Запрос по id
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
+# Запрос по email
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
+# Лимит на запросы
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
+# Запрос на создание пользователя
 def create_user(db: Session, user: schemas.UserCreate):
 
     db_user = get_user_by_email(db, email=user.email)
@@ -30,6 +34,7 @@ def create_user(db: Session, user: schemas.UserCreate):
         return db_users.id
 
 
+# Запрос на создание координат
 def create_coord(db: Session, coords: schemas.CoordCreate):
 
     db_coord = models.Coord(**coords.dict())
@@ -41,13 +46,13 @@ def create_coord(db: Session, coords: schemas.CoordCreate):
     return db_coord.id
 
 
+# Запрос на поиск перевала и создание запроса на добавление картинок
 def search_pass(db: Session, new_pereval: int, image: schemas.ImageCreate):
-    print(image)
-    print(image[1])
+
     for i in image:
-        print(i)
+
         db_coord = models.Image(**i.dict())
-        print(db_coord)
+
         db_coord.id_pass = new_pereval
 
         db.add(db_coord)
@@ -55,18 +60,7 @@ def search_pass(db: Session, new_pereval: int, image: schemas.ImageCreate):
     db.commit()
 
 
-'''def create_image(db: Session, images: schemas.ImageCreate):
-    for i in images:
-
-        db_coord = models.Image(**i.dict())
-
-        db.add(db_coord)
-        db.commit()
-        db.refresh(db_coord)
-
-        return db_coord.id'''
-
-
+# Запрос на создание перевала
 def create_pass(db: Session, item: schemas.PassCreate) -> object:
 
     db_pass = models.Pass(
