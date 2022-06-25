@@ -108,6 +108,7 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
     return db_pass.id
 
 
+# Запрос на обновление перевала
 def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> object:
     db_pass = db.query(models.Pass).filter(models.Pass.id == pass_id).first()
 

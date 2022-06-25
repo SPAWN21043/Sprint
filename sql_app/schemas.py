@@ -120,7 +120,7 @@ class PassCreate(BaseModel):
         }
 
 
-class PassAddedUpdate(BaseModel):
+class PassAddedUpdate(BaseModel):  # Схема обновления
     beauty_title: Union[str, None] = None
     title: Union[str, None] = None
     other_titles: Union[str, None] = None
