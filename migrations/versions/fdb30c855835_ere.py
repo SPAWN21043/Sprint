@@ -1,8 +1,8 @@
-"""tree
+"""ere
 
-Revision ID: 1f1ceb3d4ba2
-Revises: d90bda0ce4a4
-Create Date: 2022-06-22 11:56:06.911373
+Revision ID: fdb30c855835
+Revises: 
+Create Date: 2022-06-24 13:54:54.315139
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1f1ceb3d4ba2'
-down_revision = 'd90bda0ce4a4'
+revision = 'fdb30c855835'
+down_revision = None
 branch_labels = None
 depends_on = None
 

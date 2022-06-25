@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -69,3 +69,4 @@ class Pass(Base):  # Модель таблицы перевалов
     users = relationship("User", back_populates="pass_add")
     coord = relationship("Coord", back_populates="pass_add")
     images = relationship("Image", back_populates="owner")
+

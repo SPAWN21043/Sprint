@@ -1,8 +1,8 @@
-"""trihads
+"""efr
 
-Revision ID: 28edc97fe958
-Revises: 602a3988461e
-Create Date: 2022-06-22 14:35:02.422150
+Revision ID: 442632ce1d3e
+Revises: fdb30c855835
+Create Date: 2022-06-24 15:47:48.235311
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '28edc97fe958'
-down_revision = '602a3988461e'
+revision = '442632ce1d3e'
+down_revision = 'fdb30c855835'
 branch_labels = None
 depends_on = None
 
