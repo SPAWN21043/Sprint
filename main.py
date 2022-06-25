@@ -50,7 +50,13 @@ def search_pass(id: int, db: Session = Depends(get_db)):
 
 @app.patch("/submitData/{_id}", response_model=schemas.PassCreate, response_model_exclude_none=True)
 async def patch_submitData_id(id: int, item: schemas.PassAddedUpdate, db: Session = Depends(get_db)):
+    '''
 
+    :param id:
+    :param item:
+    :param db:
+    :return:
+    '''
     # pending — если модератор взял в работу;
     # accepted — модерация прошла успешно;
     # rejected — модерация прошла, информация не принята.
