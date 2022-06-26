@@ -160,7 +160,7 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
     :param item: схема
     :return:
     """
-    print(item.images)
+
     db_pass = db.query(models.Pass).filter(models.Pass.id == pass_id).first()
 
     db_pass.beauty_title = item.beauty_title
@@ -186,23 +186,14 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
         db_coords = create_coord(db, item.coords)
         db_pass.coords_id = db_coords
 
-    list_image = jsonable_encoder(db.query(models.Image).filter(models.Image.id_pass == pass_id).all())
-    print(list_image)
-
-    new_img = []
-
     for img in item.images:
+        id_img = img.id
         db_image = models.Image(**img.dict())
-        new_img.append(db_image)
-        print(db_image)
-    print(new_img[0])
-    n_ig = jsonable_encoder(new_img)
-    print(n_ig)
-    #  print(pass_id)
-    #  db_image.id_pass == pass_id
-    #  print(db_image.id_pass)
+        db_amg = db.query(models.Image).filter(models.Image.id == id_img).first()
+        db.delete(db_amg)
+        db.add(db_image)
 
-    '''db.add(db_image)'''
+        db.commit()
 
     db.add(db_pass)
     db.commit()
@@ -237,3 +228,22 @@ def search_all(db: Session, email:str):
         list_pass[index]['images'] = json_images
 
     return list_pass
+
+
+def search_image(db: Session, new_pass: int, image: schemas.ImageCreate):
+    """
+    Запрос на поиск перевала и создание запроса на добавление картинок
+    :param db: сессия подключения
+    :param new_pass: id перевала
+    :param image: схема
+    :return:
+    """
+
+    for i in image:
+        db_image = models.Image(**i.dict())
+
+        db_image.id_pass = new_pass
+
+        db.add(db_image)
+
+    db.commit()
