@@ -60,6 +60,12 @@ class User(UserBase):
         orm_mode = True
 
 
+class ImageBase(BaseModel):
+    id: int
+    image_url: str
+    title: str
+
+
 class ImageCreate(BaseModel):
     image_url: str
     title: str
@@ -145,7 +151,7 @@ class PassAddedUpdate(BaseModel):  # Схема обновления
     autumn: Union[str, None] = None
     spring: Union[str, None] = None
     coords: Union[CoordCreate, None] = None
-    '''images: Union[List[ImageCreate], None] = None'''
+    images: Union[List[ImageCreate], None] = None
 
     class Config:
         schema_extra = {

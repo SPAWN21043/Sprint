@@ -160,7 +160,7 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
     :param item: схема
     :return:
     """
-    print(item)
+    print(item.images)
     db_pass = db.query(models.Pass).filter(models.Pass.id == pass_id).first()
 
     db_pass.beauty_title = item.beauty_title
@@ -185,6 +185,24 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
     else:
         db_coords = create_coord(db, item.coords)
         db_pass.coords_id = db_coords
+
+    list_image = jsonable_encoder(db.query(models.Image).filter(models.Image.id_pass == pass_id).all())
+    print(list_image)
+
+    new_img = []
+
+    for img in item.images:
+        db_image = models.Image(**img.dict())
+        new_img.append(db_image)
+        print(db_image)
+    print(new_img[0])
+    n_ig = jsonable_encoder(new_img)
+    print(n_ig)
+    #  print(pass_id)
+    #  db_image.id_pass == pass_id
+    #  print(db_image.id_pass)
+
+    '''db.add(db_image)'''
 
     db.add(db_pass)
     db.commit()
@@ -218,5 +236,4 @@ def search_all(db: Session, email:str):
         list_pass[index]['coords'] = json_coords
         list_pass[index]['images'] = json_images
 
-    print(list_pass)
     return list_pass

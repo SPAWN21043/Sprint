@@ -47,7 +47,7 @@ class Image(Base):  # Модель таблицы с информацией о �
     owner = relationship("Pass", back_populates="images")
 
     def __repr__(self):
-        return f"image_url={self.image_url} title={self.title} id_pass={self.id_pass}"
+        return f"id={self.id} image_url={self.image_url} title={self.title} id_pass={self.id_pass}"
 
 
 class Pass(Base):  # Модель таблицы перевалов
