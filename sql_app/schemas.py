@@ -73,6 +73,21 @@ class Image(ImageCreate):
         orm_mode = True
 
 
+class PassBase(BaseModel):
+    id: int
+    beautyTitle: str
+    title: str
+    other_titles: str
+    connect: str
+    winter: str
+    summer: str
+    autumn: str
+    spring: str
+    user: Optional[UserCreate]
+    coords: Optional[CoordCreate]
+    images: Optional[List[ImageCreate]]
+
+
 class PassCreate(BaseModel):
     beautyTitle: str
     title: str
@@ -130,6 +145,7 @@ class PassAddedUpdate(BaseModel):  # Схема обновления
     autumn: Union[str, None] = None
     spring: Union[str, None] = None
     coords: Union[CoordCreate, None] = None
+    '''images: Union[List[ImageCreate], None] = None'''
 
     class Config:
         schema_extra = {
@@ -138,15 +154,20 @@ class PassAddedUpdate(BaseModel):  # Схема обновления
                 'title': 'Гроза',
                 'other_titles': 'Третьев',
                 'connect': ', ',
+                'winter': '1Б',
+                'summer': '1А',
+                'autumn': '1А',
+                'spring': '1А',
                 'coords': {
                     'latitude': 56.2368,
                     'longitude': 41.683,
                     'height': 120,
                 },
-                'winter': '1Б',
-                'summer': '1А',
-                'autumn': '1А',
-                'spring': '1А',
+                "images":
+                    [{"image_url": "media/1",
+                      "title": "Спуск"},
+                     {"image_url": "media/2",
+                      "title": "Вершина"}]
             }
         }
 

@@ -46,6 +46,9 @@ class Image(Base):  # Модель таблицы с информацией о �
     # Организация связи таблиц
     owner = relationship("Pass", back_populates="images")
 
+    def __repr__(self):
+        return f"image_url={self.image_url} title={self.title} id_pass={self.id_pass}"
+
 
 class Pass(Base):  # Модель таблицы перевалов
 
@@ -69,4 +72,7 @@ class Pass(Base):  # Модель таблицы перевалов
     users = relationship("User", back_populates="pass_add")
     coord = relationship("Coord", back_populates="pass_add")
     images = relationship("Image", back_populates="owner")
+
+    def __repr__(self):
+        return f'add_time={self.add_time}'
 

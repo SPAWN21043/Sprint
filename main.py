@@ -1,4 +1,3 @@
-from http.client import HTTPException
 from typing import List
 
 from fastapi import FastAPI, Depends
@@ -22,7 +21,14 @@ def get_db():
 
 
 @app.post('/submitData/', response_model=schemas.PassCreate)
-def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):  # Название изменено так как не должно быть больших букв в названии
+async def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):  # Название изменено так как не должно быть больших букв в названии
+
+    """
+    Вызов функции создания записи о перевале, пользователе, координат и информации о фотографиях.
+    :param item:
+    :param db:
+    :return:
+    """
 
     try:  # Проверка на подключение к базе
         db.execute('SELECT * FROM users')
@@ -48,15 +54,17 @@ def search_pass(id: int, db: Session = Depends(get_db)):
     return get_json_response(200, 'Объект получен', jsonable_encoder(item))
 
 
-@app.patch("/submitData/{_id}", response_model=schemas.PassCreate, response_model_exclude_none=True)
-async def patch_submitData_id(id: int, item: schemas.PassAddedUpdate, db: Session = Depends(get_db)):
-    '''
+@app.patch("/submitData/{id}", response_model=schemas.PassCreate, response_model_exclude_none=True)
+async def patch_submit_data_id(id: int, item: schemas.PassAddedUpdate, db: Session = Depends(get_db)):
 
-    :param id:
-    :param item:
-    :param db:
-    :return:
-    '''
+    """
+    Вызов функции получения информации о перевале.
+    :param id: Параметр id записи перевала
+    :param item: класс схемы
+    :param db: сессия подключения
+    :return: сообщение в JSON
+    """
+
     # pending — если модератор взял в работу;
     # accepted — модерация прошла успешно;
     # rejected — модерация прошла, информация не принята.
@@ -66,13 +74,28 @@ async def patch_submitData_id(id: int, item: schemas.PassAddedUpdate, db: Sessio
         'rejected',
     ]
 
-    db_pereval_info = crud.get_pass(db, id)
+    db_pass_info = crud.get_pass(db, id)
 
-    if db_pereval_info is None:
+    if db_pass_info is None:
         return get_json_response(422, f'Перевал с id {id} отсутствует')
 
-    if db_pereval_info['status'] in statuses:
+    if db_pass_info['status'] in statuses:
         return get_json_response(422, f'Перевал с id {id} на модерации')
 
     update_pass = crud.update_pass(id, db, item)
     return get_json_response(200, 'Запись обновлена', update_pass)
+
+
+@app.get('/submitDate/{email}', response_model=List[schemas.PassBase])
+async def read_pass(email: str, db: Session = Depends(get_db)):
+
+    """
+    Запрос о перевалах созданных пользователем с фильтром по email.
+    :param email: email пользователя
+    :param skip: пропуск по id
+    :param limit: лимит выборки по количеству записей
+    :param db: сессия подключения
+    :return: сообщение в JSON
+    """
+    pass_all = crud.search_all(db=db, email=email)
+    return pass_all
