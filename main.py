@@ -73,7 +73,7 @@ async def patch_submit_data_id(id: int, item: schemas.PassAddedUpdate, db: Sessi
     :param db: сессия подключения дб.
     :return: сообщение в JSON.
     """
-
+    
     # pending — если модератор взял в работу;
     # accepted — модерация прошла успешно;
     # rejected — модерация прошла, информация не принята.
