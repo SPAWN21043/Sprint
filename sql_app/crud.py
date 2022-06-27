@@ -228,22 +228,3 @@ def search_all(db: Session, email:str):
         list_pass[index]['images'] = json_images
 
     return list_pass
-
-
-def search_image(db: Session, new_pass: int, image: schemas.ImageCreate):
-    """
-    Запрос на поиск перевала и создание запроса на добавление картинок
-    :param db: сессия подключения
-    :param new_pass: id перевала
-    :param image: схема
-    :return:
-    """
-
-    for i in image:
-        db_image = models.Image(**i.dict())
-
-        db_image.id_pass = new_pass
-
-        db.add(db_image)
-
-    db.commit()
