@@ -4,24 +4,47 @@ from . import models, schemas
 import datetime
 
 
-# Запрос по id
 def get_user(db: Session, user_id: int):
-    print(user_id)
+    """
+    Запрос по id
+    :param db: сессия подключения
+    :param user_id: id пользователя
+    :return: возврат модели с фильтром по id
+    """
+
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-# Запрос по email
 def get_user_by_email(db: Session, email: str):
+    """
+    Запрос пользователя по email
+    :param db: сессия подключения
+    :param email: email пользователя
+    :return: возврат модели с фильтром по email
+    """
+
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-# Лимит на запросы
 def get_users(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Лимит на запросы
+    :param db: сессия подключения
+    :param skip: пропуск по id
+    :param limit: лимит выборки по количеству записей
+    :return:
+    """
+
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-# Запрос на создание пользователя
 def create_user(db: Session, user: schemas.UserCreate):
+    """
+    Запрос на создание пользователя
+    :param db: сессия подключения
+    :param user: пользователь
+    :return:
+    """
 
     db_user = get_user_by_email(db, email=user.email)
 
@@ -36,8 +59,13 @@ def create_user(db: Session, user: schemas.UserCreate):
         return db_users.id
 
 
-# Запрос на создание координат
 def create_coord(db: Session, coords: schemas.CoordCreate):
+    """
+    Запрос на создание координат
+    :param db: сессия подключения
+    :param coords:
+    :return:
+    """
 
     db_coord = models.Coord(**coords.dict())
 
@@ -48,41 +76,57 @@ def create_coord(db: Session, coords: schemas.CoordCreate):
     return db_coord.id
 
 
-# Запрос на поиск перевала и создание запроса на добавление картинок
-def search_pass(db: Session, new_pereval: int, image: schemas.ImageCreate):
+def search_pass(db: Session, new_pass: int, image: schemas.ImageCreate):
+    """
+    Запрос на поиск перевала и создание запроса на добавление картинок
+    :param db: сессия подключения
+    :param new_pass: id перевала
+    :param image: схема
+    :return:
+    """
 
     for i in image:
+        db_image = models.Image(**i.dict())
 
-        db_coord = models.Image(**i.dict())
+        db_image.id_pass = new_pass
 
-        db_coord.id_pass = new_pereval
-
-        db.add(db_coord)
+        db.add(db_image)
 
     db.commit()
 
 
 def get_pass(db: Session, id: int) -> dict:
+    """
+    Запрос на получение информации о перевале по id.
+    :param db: сессия подключения
+    :param id: id пользователя
+    :return:
+    """
 
-        c_pass = db.query(models.Pass).filter(models.Pass.id == id).first()
-        user = db.query(models.User).filter(models.User.id == c_pass.user).first()
-        coords = db.query(models.Coord).filter(models.Coord.id == c_pass.coords).first()
-        image = db.query(models.Image).filter(models.Image.id_pass == id).first()
+    c_pass = db.query(models.Pass).filter(models.Pass.id == id).first()
+    user = db.query(models.User).filter(models.User.id == c_pass.user).first()
+    coords = db.query(models.Coord).filter(models.Coord.id == c_pass.coords).first()
+    image = db.query(models.Image).filter(models.Image.id_pass == id).all()
 
-        json_user = jsonable_encoder(user)
-        json_coords = jsonable_encoder(coords)
-        json_images = jsonable_encoder(image)
-        dict_pass = jsonable_encoder(c_pass)
+    json_user = jsonable_encoder(user)
+    json_coords = jsonable_encoder(coords)
+    json_images = jsonable_encoder(image)
+    dict_pass = jsonable_encoder(c_pass)
 
-        dict_pass['user'] = json_user
-        dict_pass['coords'] = json_coords
-        dict_pass['images'] = json_images
+    dict_pass['user'] = json_user
+    dict_pass['coords'] = json_coords
+    dict_pass['images'] = json_images
 
-        return dict_pass
+    return dict_pass
 
 
-# Запрос на создание перевала
 def create_pass(db: Session, item: schemas.PassCreate) -> object:
+    """
+    Запрос на создание перевала
+    :param db: сессия подключения
+    :param item: схема
+    :return:
+    """
 
     db_pass = models.Pass(
         beautyTitle=item.beautyTitle,
@@ -108,8 +152,15 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
     return db_pass.id
 
 
-# Запрос на обновление перевала
 def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> object:
+    """
+    Запрос на обновление перевала
+    :param pass_id: id перевала
+    :param db: сессия подключения
+    :param item: схема
+    :return:
+    """
+
     db_pass = db.query(models.Pass).filter(models.Pass.id == pass_id).first()
 
     db_pass.beauty_title = item.beauty_title
@@ -133,10 +184,47 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
         db.refresh(db_coords)
     else:
         db_coords = create_coord(db, item.coords)
-        db_pass.coords_id = db_coords.id
+        db_pass.coords_id = db_coords
+
+    for img in item.images:
+        id_img = img.id
+        db_image = models.Image(**img.dict())
+        db_amg = db.query(models.Image).filter(models.Image.id == id_img).first()
+        db.delete(db_amg)
+        db.add(db_image)
+
+        db.commit()
 
     db.add(db_pass)
     db.commit()
     db.refresh(db_pass)
 
     return db_pass.id
+
+
+def search_all(db: Session, email:str):
+    """
+    Запрос на поиск перевала и создание запроса на добавление картинок
+    :param db: сессия подключения
+    :param new_pass: id перевала
+    :param image: схема
+    :return:
+    """
+    user_pass = get_user_by_email(db, email)
+    q_pass = db.query(models.Pass).filter(models.Pass.user == user_pass.id).all()
+
+    list_pass = jsonable_encoder(q_pass)
+    json_user = jsonable_encoder(user_pass)
+
+    index = -1
+    for i in q_pass:
+        index += 1
+
+        json_coords = jsonable_encoder(db.query(models.Coord).filter(models.Coord.id == i.coords).first())
+        json_images = jsonable_encoder(db.query(models.Image).filter(models.Image.id_pass == i.id).all())
+
+        list_pass[index]['user'] = json_user
+        list_pass[index]['coords'] = json_coords
+        list_pass[index]['images'] = json_images
+
+    return list_pass

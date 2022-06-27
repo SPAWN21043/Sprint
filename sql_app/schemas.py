@@ -60,6 +60,13 @@ class User(UserBase):
         orm_mode = True
 
 
+class ImageBase(BaseModel):
+    id: int
+    image_url: str
+    title: str
+    id_pass: int
+
+
 class ImageCreate(BaseModel):
     image_url: str
     title: str
@@ -71,6 +78,21 @@ class Image(ImageCreate):
 
     class Config:
         orm_mode = True
+
+
+class PassBase(BaseModel):
+    id: int
+    beautyTitle: str
+    title: str
+    other_titles: str
+    connect: str
+    winter: str
+    summer: str
+    autumn: str
+    spring: str
+    user: Optional[UserCreate]
+    coords: Optional[CoordCreate]
+    images: Optional[List[ImageBase]]
 
 
 class PassCreate(BaseModel):
@@ -121,6 +143,7 @@ class PassCreate(BaseModel):
 
 
 class PassAddedUpdate(BaseModel):  # Схема обновления
+    id: Union[int, None] = None
     beauty_title: Union[str, None] = None
     title: Union[str, None] = None
     other_titles: Union[str, None] = None
@@ -130,23 +153,34 @@ class PassAddedUpdate(BaseModel):  # Схема обновления
     autumn: Union[str, None] = None
     spring: Union[str, None] = None
     coords: Union[CoordCreate, None] = None
+    images: Union[List[ImageBase], None] = None
 
     class Config:
         schema_extra = {
             'example': {
+                'id': 1,
                 'beauty_title': 'пер.',
                 'title': 'Гроза',
                 'other_titles': 'Третьев',
                 'connect': ', ',
+                'winter': '1Б',
+                'summer': '1А',
+                'autumn': '1А',
+                'spring': '1А',
                 'coords': {
                     'latitude': 56.2368,
                     'longitude': 41.683,
                     'height': 120,
                 },
-                'winter': '1Б',
-                'summer': '1А',
-                'autumn': '1А',
-                'spring': '1А',
+                "images":
+                    [{"id": 1,
+                      "image_url": "media/1",
+                      "title": "Спуск",
+                      "id_pass": 1},
+                     {"id": 2,
+                      "image_url": "media/1",
+                      "title": "Равнина",
+                      "id_pass": 1}]
             }
         }
 
