@@ -107,20 +107,23 @@ def get_pass(db: Session, id: int) -> dict:
     """
 
     c_pass = db.query(models.Pass).filter(models.Pass.id == id).first()
-    user = db.query(models.User).filter(models.User.id == c_pass.user).first()
-    coords = db.query(models.Coord).filter(models.Coord.id == c_pass.coords).first()
-    image = db.query(models.Image).filter(models.Image.id_pass == id).all()
+    if c_pass is None:
+        return None
+    else:
+        user = db.query(models.User).filter(models.User.id == c_pass.user).first()
+        coords = db.query(models.Coord).filter(models.Coord.id == c_pass.coords).first()
+        image = db.query(models.Image).filter(models.Image.id_pass == id).all()
 
-    json_user = jsonable_encoder(user)
-    json_coords = jsonable_encoder(coords)
-    json_images = jsonable_encoder(image)
-    dict_pass = jsonable_encoder(c_pass)
+        json_user = jsonable_encoder(user)
+        json_coords = jsonable_encoder(coords)
+        json_images = jsonable_encoder(image)
+        dict_pass = jsonable_encoder(c_pass)
 
-    dict_pass['user'] = json_user
-    dict_pass['coords'] = json_coords
-    dict_pass['images'] = json_images
+        dict_pass['user'] = json_user
+        dict_pass['coords'] = json_coords
+        dict_pass['images'] = json_images
 
-    return dict_pass
+        return dict_pass
 
 
 def create_pass(db: Session, item: schemas.PassCreate) -> object:
@@ -192,11 +195,13 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
     for img in item.images:
         id_img = img.id
         db_image = models.Image(**img.dict())
-        db_amg = db.query(models.Image).filter(models.Image.id == id_img).first()
-        db.delete(db_amg)
-        db.add(db_image)
 
-        db.commit()
+        db_amg = (db.query(models.Image).filter(models.Image.id == id_img).first())
+
+        db.is_modified(db_amg)
+        db_amg.image_url = db_image.image_url
+        db_amg.title = db_image.title
+        db.is_modified(db_amg)
 
     db.add(db_pass)
     db.commit()
@@ -215,20 +220,24 @@ def search_all(db: Session, email: str):
     """
 
     user_pass = get_user_by_email(db, email)
-    q_pass = db.query(models.Pass).filter(models.Pass.user == user_pass.id).all()
 
-    list_pass = jsonable_encoder(q_pass)
-    json_user = jsonable_encoder(user_pass)
+    if user_pass is None:
+        return None
+    else:
+        q_pass = db.query(models.Pass).filter(models.Pass.user == user_pass.id).all()
 
-    index = -1
-    for i in q_pass:
-        index += 1
+        list_pass = jsonable_encoder(q_pass)
+        json_user = jsonable_encoder(user_pass)
 
-        json_coords = jsonable_encoder(db.query(models.Coord).filter(models.Coord.id == i.coords).first())
-        json_images = jsonable_encoder(db.query(models.Image).filter(models.Image.id_pass == i.id).all())
+        index = -1
+        for i in q_pass:
+            index += 1
 
-        list_pass[index]['user'] = json_user
-        list_pass[index]['coords'] = json_coords
-        list_pass[index]['images'] = json_images
+            json_coords = jsonable_encoder(db.query(models.Coord).filter(models.Coord.id == i.coords).first())
+            json_images = jsonable_encoder(db.query(models.Image).filter(models.Image.id_pass == i.id).all())
 
-    return list_pass
+            list_pass[index]['user'] = json_user
+            list_pass[index]['coords'] = json_coords
+            list_pass[index]['images'] = json_images
+
+        return list_pass

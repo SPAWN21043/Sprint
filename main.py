@@ -36,16 +36,26 @@ async def post_pass(item: schemas.PassCreate, db: Session = Depends(get_db)):
         raise ErrorConnectionServer(f'Ошибка соединения: {error}')
 
     news_user = crud.create_user(db=db, user=item.user)  # Создание пользователя
-    new_coord = crud.create_coord(db=db, coords=item.coords)  # Создание координат
 
-    item.user = news_user
-    item.coords = new_coord
+    if news_user is None:
+        return get_json_response(422, "Ошибка при создании пользователя")
+    else:
+        new_coord = crud.create_coord(db=db, coords=item.coords)  # Создание координат
 
-    new_pass = crud.create_pass(db=db, item=item)  # Создание перевала
+        if new_coord is None:
+            return get_json_response(422, "Ошибка при создании координат")
+        else:
+            item.user = news_user
+            item.coords = new_coord
 
-    crud.search_pass(db=db, new_pass=new_pass, image=item.images)  # Создание информации о картинках
+            new_pass = crud.create_pass(db=db, item=item)  # Создание перевала
 
-    return get_json_response(200, "Отправлено", new_pass)
+            if new_pass is None:
+                return get_json_response(422, "Ошибка при создании перевала")
+            else:
+                crud.search_pass(db=db, new_pass=new_pass, image=item.images)  # Создание информации о картинках
+
+                return get_json_response(200, "Перевал создан", new_pass)
 
 
 @app.get('/submitData/{id}', response_model=schemas.PassCreate)
@@ -56,11 +66,14 @@ def search_pass(id: int, db: Session = Depends(get_db)):
     :param id: id перевала.
     :param db: сессия подключения бд.
     :return: ответ в формате JSON.
-
     """
+
     item = crud.get_pass(db=db, id=id)
 
-    return get_json_response(200, 'Объект получен', jsonable_encoder(item))
+    if item is None:
+        return get_json_response(422, f'Перевал с id {id} отсутствует')
+    else:
+        return get_json_response(200, 'Объект получен', jsonable_encoder(item))
 
 
 @app.patch("/submitData/{id}", response_model=schemas.PassCreate, response_model_exclude_none=True)
@@ -87,13 +100,13 @@ async def patch_submit_data_id(id: int, item: schemas.PassAddedUpdate, db: Sessi
     db_pass_info = crud.get_pass(db, id)
 
     if db_pass_info is None:
-        return get_json_response(422, f'Перевал с id {id} отсутствует')
+        return get_json_response(422, f'Перевал с id {id} отсутствует', {"state": 0})
 
     if db_pass_info['status'] in statuses:
-        return get_json_response(422, f'Перевал с id {id} на модерации')
-
-    update_pass = crud.update_pass(id, db, item)
-    return get_json_response(200, 'Запись обновлена', update_pass)
+        return get_json_response(422, f'Перевал с id {id} на модерации', {"state": 0})
+    else:
+        crud.update_pass(id, db, item)
+        return get_json_response(200, 'Запись обновлена', {"state": 1})
 
 
 @app.get('/submitDate/{email}', response_model=List[schemas.PassBase])
@@ -108,4 +121,7 @@ async def read_pass(email: str, db: Session = Depends(get_db)):
 
     pass_all = crud.search_all(db=db, email=email)
 
-    return pass_all
+    if pass_all is None:
+        return get_json_response(422, "По этому email записей не найдено")
+    else:
+        return pass_all
