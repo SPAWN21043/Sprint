@@ -5,11 +5,12 @@ import datetime
 
 
 def get_user(db: Session, user_id: int):
+
     """
-    Запрос по id
-    :param db: сессия подключения
-    :param user_id: id пользователя
-    :return: возврат модели с фильтром по id
+    Запрос по id.
+    :param db: сессия подключения.
+    :param user_id: id пользователя.
+    :return: возврат модели с фильтром по id.
     """
 
     return db.query(models.User).filter(models.User.id == user_id).first()
@@ -17,21 +18,22 @@ def get_user(db: Session, user_id: int):
 
 def get_user_by_email(db: Session, email: str):
     """
-    Запрос пользователя по email
-    :param db: сессия подключения
-    :param email: email пользователя
-    :return: возврат модели с фильтром по email
+    Запрос пользователя по email.
+    :param db: сессия подключения.
+    :param email: email пользователя.
+    :return: возврат модели с фильтром по email.
     """
 
     return db.query(models.User).filter(models.User.email == email).first()
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
+
     """
-    Лимит на запросы
-    :param db: сессия подключения
-    :param skip: пропуск по id
-    :param limit: лимит выборки по количеству записей
+    Лимит на запросы.
+    :param db: сессия подключения.
+    :param skip: пропуск по id.
+    :param limit: лимит выборки по количеству записей.
     :return:
     """
 
@@ -39,11 +41,12 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
+
     """
-    Запрос на создание пользователя
-    :param db: сессия подключения
-    :param user: пользователь
-    :return:
+    Запрос на создание пользователя.
+    :param db: сессия подключения.
+    :param user: пользователь.
+    :return: возврат id пользователя.
     """
 
     db_user = get_user_by_email(db, email=user.email)
@@ -61,10 +64,10 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 def create_coord(db: Session, coords: schemas.CoordCreate):
     """
-    Запрос на создание координат
-    :param db: сессия подключения
-    :param coords:
-    :return:
+    Запрос на создание координат.
+    :param db: сессия подключения.
+    :param coords: схема.
+    :return: Возврат id координат.
     """
 
     db_coord = models.Coord(**coords.dict())
@@ -78,10 +81,10 @@ def create_coord(db: Session, coords: schemas.CoordCreate):
 
 def search_pass(db: Session, new_pass: int, image: schemas.ImageCreate):
     """
-    Запрос на поиск перевала и создание запроса на добавление картинок
-    :param db: сессия подключения
-    :param new_pass: id перевала
-    :param image: схема
+    Запрос на поиск перевала и создание запроса на добавление картинок.
+    :param db: сессия подключения.
+    :param new_pass: id перевала.
+    :param image: схема.
     :return:
     """
 
@@ -98,8 +101,8 @@ def search_pass(db: Session, new_pass: int, image: schemas.ImageCreate):
 def get_pass(db: Session, id: int) -> dict:
     """
     Запрос на получение информации о перевале по id.
-    :param db: сессия подключения
-    :param id: id пользователя
+    :param db: сессия подключения.
+    :param id: id пользователя.
     :return:
     """
 
@@ -122,10 +125,10 @@ def get_pass(db: Session, id: int) -> dict:
 
 def create_pass(db: Session, item: schemas.PassCreate) -> object:
     """
-    Запрос на создание перевала
-    :param db: сессия подключения
-    :param item: схема
-    :return:
+    Запрос на создание перевала.
+    :param db: сессия подключения.
+    :param item: схема.
+    :return: возврат id перевала.
     """
 
     db_pass = models.Pass(
@@ -154,10 +157,10 @@ def create_pass(db: Session, item: schemas.PassCreate) -> object:
 
 def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> object:
     """
-    Запрос на обновление перевала
-    :param pass_id: id перевала
-    :param db: сессия подключения
-    :param item: схема
+    Запрос на обновление перевала.
+    :param pass_id: id перевала.
+    :param db: сессия подключения.
+    :param item: схема.
     :return:
     """
 
@@ -202,14 +205,15 @@ def update_pass(pass_id: int, db: Session, item: schemas.PassAddedUpdate) -> obj
     return db_pass.id
 
 
-def search_all(db: Session, email:str):
+def search_all(db: Session, email: str):
+
     """
-    Запрос на поиск перевала и создание запроса на добавление картинок
-    :param db: сессия подключения
-    :param new_pass: id перевала
-    :param image: схема
-    :return:
+    Поиск всех перевалов по email.
+    :param db: сессия подключения.
+    :param email: email пользователя.
+    :return: список перевалов.
     """
+
     user_pass = get_user_by_email(db, email)
     q_pass = db.query(models.Pass).filter(models.Pass.user == user_pass.id).all()
 
