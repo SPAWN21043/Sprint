@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 
 from sql_app import schemas, crud
 from sql_app.database import SessionLocal
-from sql_app.errors import ErrorConnectionServer, get_json_response, ErrorCreatingRecord
+from sql_app.errors import ErrorConnectionServer, get_json_response
 from sqlalchemy.orm import Session
 
 app = FastAPI()

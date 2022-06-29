@@ -1,4 +1,6 @@
 .env
-myHelpAlemb.py
 migrations
 alembic.ini
+__pycache__
+.idea
+.pytest_cache
