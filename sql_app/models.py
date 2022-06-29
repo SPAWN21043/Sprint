@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -59,7 +59,7 @@ class Pass(Base):  # Модель таблицы перевалов
     title = Column(String)
     other_titles = Column(String)
     connect = Column(String)
-    add_time = datetime
+    add_time = Column(DateTime)
     winter = Column(String)
     summer = Column(String)
     autumn = Column(String)
@@ -72,7 +72,3 @@ class Pass(Base):  # Модель таблицы перевалов
     users = relationship("User", back_populates="pass_add")
     coord = relationship("Coord", back_populates="pass_add")
     images = relationship("Image", back_populates="owner")
-
-    def __repr__(self):
-        return f'add_time={self.add_time}'
-
